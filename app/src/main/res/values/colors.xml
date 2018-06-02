@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#b71c1c</color>
+    <color name="colorPrimaryDark">#7f0000</color>
+    <color name="colorAccent">#d32f2f</color>
+    <color name="white">#ffffff</color>
+    <color name="blueGray">#455A64</color>
+    <color name="black">#000</color>
+    <color name="verify_green">#76ff03</color>
+
+
+    <color name="screen1">#b71c1c</color>
+    <color name="screen2">#5eb8ff</color>
+    <color name="screen3">#7e57c2</color>
+    <color name="screen4">#546e7a</color>
+
+
+    <color name="screen1dot_dark">#7f0000</color>
+    <color name="screen2dot_dark">#003c8f</color>
+    <color name="screen3dot_dark">#6a1b9a</color>
+    <color name="screen4dot_dark">#212121</color>
+
+    <color name="screen1dot_light">#f05545</color>
+    <color name="screen2dot_light">#b6ffff</color>
+    <color name="screen3dot_light">#c7a4ff</color>
+    <color name="screen4dot_light">#ffffff</color>
+
+
+    <array name="dot_active">
+
+        <item>@color/screen1dot_light</item>
+        <item>@color/screen2dot_light</item>
+        <item>@color/screen3dot_light</item>
+        <item>@color/screen4dot_light</item>
+
+    </array>
+    <array name="dot_Inactive">
+
+        <item>@color/screen1dot_dark</item>
+        <item>@color/screen2dot_dark</item>
+        <item>@color/screen3dot_dark</item>
+        <item>@color/screen4dot_dark</item>
+
+    </array>
+
+    <color name="black_overlay">#66000000</color>
+</resources>

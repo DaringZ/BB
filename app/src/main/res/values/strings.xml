@@ -1,0 +1,108 @@
+<resources>
+    <string name="app_name">Bloody Bank</string>
+    <string name="app_first_name">Bloody</string>
+    <string name="app_last_name">Bank</string>
+    <string name="slogan">#Hero In Disguise</string>
+    <string name="Appintro">is an app to help and connect people
+        with the same blood type in the same location with just a swipe of a hand.</string>
+
+    <string name="youAre">You\'re Somebody\'s</string>
+    <string name="type">Type</string>
+
+    <string name="btn_next">Next</string>
+    <string name="hint_FullName">Full Name</string>
+    <string name="gender">Gender</string>
+    <string name="hint_mobileNumber">Mobile Number</string>
+    <string name="hint_Birthday">Birthday</string>
+    <string name="hint_age">Your age</string>
+    <string name="snd_code">Send Code</string>
+    <string name="code">Code</string>
+    <string name="verifyCode">Verify Code</string>
+    <string name="resendCode">RESEND CODE</string>
+
+    <string name="home">Home</string>
+    <string name="reqBlood">Request Blood Donation</string>
+    <string name="history">History</string>
+    <string name="setting">Settings</string>
+    <string name="guide">Guide</string>
+    <string name="aboutUS">About Us</string>
+
+    <string name="scan">SCAN</string>
+    <string name="search">Search</string>
+
+    <string name="open">Open</string>
+    <string name="close">Close</string>
+    <string name="login">Have a account?LOGIN</string>
+    <string name="btn_login">Login</string>
+    <string name="tv_createAccount">No account yet? REGISTER</string>
+    <string-array name="title1">
+        <item>Bloody</item>
+        <item>Scan</item>
+        <item>Search</item>
+        <item>Be Hero</item>
+    </string-array>
+
+    <string-array name="title2">
+        <item>Bank</item>
+        <item>By Area</item>
+        <item>Through out Database</item>
+        <item>In Disguise</item>
+    </string-array>
+
+    <string-array name="description">
+        <item>@string/Appintro</item>
+        <item>On our interative map and let recipients\n
+            find you in a flash.</item>
+        <item>thousands of donors waiting to help you.
+        #1 PINT can save 3 LIVES.</item>
+        <item>#You can also request blood donation\n through our app. Because its a new way
+            to say get well soon. </item>
+
+
+    </string-array>
+    <string-array name="honorific">
+        <item>Honorific Mr. or Mrs.</item>
+        <item>Mr.</item>
+        <item>Mrs.</item>
+        <item>Ms.</item>
+        <item>Miss.</item>
+        <item>Dr.</item>
+        <item>Eng.</item>
+        <item>Sir.</item>
+
+    </string-array>
+
+    <string-array name="bloodType">
+        <item>Your Blood Group</item>
+        <item>A+</item>
+        <item>B+</item>
+        <item>AB+.</item>
+        <item>O+</item>
+        <item>O-</item>
+        <item>AB-</item>
+    </string-array>
+    <string name="title_activity_maps">Map</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="hint_email">Email address</string>
+    <string name="hint_password">New password</string>
+    <string name="hint_renterpassword">Re-Enter Password</string>
+    <string name="proceed">Proceed</string>
+    <string name="pickLocation">Your Location</string>
+    <string name="verifyPhone">Verify Phone</string>
+    <string name="Personal_info">Personal Information</string>
+    <string name="back">Back</string>
+    <string name="verified">Verified</string>
+    <string name="lb_register">Get  Register</string>
+    <string name="Bloodtype">Blood Type</string>
+    <string name="btn_fnish">Fnish</string>
+    <string name="error">*Please select gender</string>
+    <string name="PhoneNumber">Phone number</string>
+
+    <string name="title_activity_splash_screen">splashScreen</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+
+
+</resources>

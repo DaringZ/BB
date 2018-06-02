@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_centerVertical="true"
+    android:layout_centerHorizontal="true"
+    android:padding="25dp"
+    android:background="@color/screen3">
+
+
+
+    <LinearLayout
+        android:id="@+id/LL_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:layout_alignParentTop="true"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true">
+
+        <ImageView
+            android:id="@+id/img_intro"
+            style="@style/imgStyle3"
+            android:adjustViewBounds="true"
+            android:scaleType="centerInside"
+            android:layout_width="260dp"
+            android:layout_height="260dp"
+            android:layout_gravity="start"
+
+
+            android:src="@mipmap/img3"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="15dp"
+            />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+
+            <LinearLayout
+                android:id="@+id/LL_horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical|center_horizontal"
+                android:padding="5dp"
+                android:layout_marginBottom="10dp">
+
+                <TextView
+                    android:id="@+id/tv_title1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/app_first_name"
+                    android:textSize="32sp"
+                    android:textStyle="italic"
+                    android:textColor="@color/screen3dot_light"
+
+                    android:textAlignment="center"
+
+                    />
+                <TextView
+                    android:id="@+id/tv_title2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/app_last_name"
+                    android:textSize="32sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/screen3dot_dark"
+                    android:textAlignment="center"
+                    />
+
+
+            </LinearLayout>
+            <TextView
+
+                android:id="@+id/tv_paragraph"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/Appintro"
+                android:textSize="22sp"
+                android:textAlignment="center"
+                android:textColor="@color/white"/>
+        </LinearLayout>
+
+
+
+
+
+
+    </LinearLayout>
+
+</RelativeLayout>

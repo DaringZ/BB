@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "153496754429",
+    "firebase_url": "https://bloodybank-174bb.firebaseio.com",
+    "project_id": "bloodybank-174bb",
+    "storage_bucket": "bloodybank-174bb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:153496754429:android:73fb513f8966e7a1",
+        "android_client_info": {
+          "package_name": "com.devster.bloodybank"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "153496754429-t36892127fdlek1t7s0mpvh29o0dn74q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.devster.bloodybank",
+            "certificate_hash": "39258c0dfb2c8b5e83b4553dbacd6ce4cffc79b5"
+          }
+        },
+        {
+          "client_id": "153496754429-6mt9r7fu7o7e0to814vr5vprtlp5tiq4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDcrN2at3Gg1lTAxrM1jQJgIA68PTiGpCs"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "153496754429-6mt9r7fu7o7e0to814vr5vprtlp5tiq4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

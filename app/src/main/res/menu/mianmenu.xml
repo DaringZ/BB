@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/mmHome"
+        android:title="@string/home"
+        app:showAsAction="never"
+        android:icon="@mipmap/home"></item>
+
+    <item android:id="@+id/mmreqBlood"
+        android:title="@string/reqBlood"
+        app:showAsAction="never"
+        android:icon="@mipmap/request"
+        ></item>
+
+    <item android:id="@+id/mmhistory"
+        android:title="@string/history"
+        app:showAsAction="never"
+        android:icon="@mipmap/history"></item>
+
+    <item android:id="@+id/mmSetting"
+        android:title="@string/setting"
+        app:showAsAction="never"
+        android:icon="@mipmap/settings"></item>
+
+    <item android:id="@+id/mmDonorGuide"
+        android:title="@string/guide"
+        app:showAsAction="never"></item>
+
+    <item android:id="@+id/mmAbout"
+        android:title="@string/aboutUS"
+        app:showAsAction="never"
+        android:icon="@mipmap/about"></item>
+
+</menu>

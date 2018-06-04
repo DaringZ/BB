@@ -313,7 +313,7 @@ public class Phase1 extends Fragment implements View.OnClickListener {
                 new android.os.Handler().postDelayed(
                         new Runnable() {
                             public void run() {
-
+                                progressDialog.dismiss();
                                 et_code.setVisibility(View.VISIBLE);
                                 verify_btn.setVisibility(View.VISIBLE);
                                 LinearLayout layout_btn = view.findViewById(R.id.layoutPanel_btn);

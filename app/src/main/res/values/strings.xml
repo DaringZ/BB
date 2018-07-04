@@ -60,25 +60,16 @@
 
 
     </string-array>
-    <string-array name="honorific">
-        <item>Honorific Mr. or Mrs.</item>
-        <item>Mr.</item>
-        <item>Mrs.</item>
-        <item>Ms.</item>
-        <item>Miss.</item>
-        <item>Dr.</item>
-        <item>Eng.</item>
-        <item>Sir.</item>
-
-    </string-array>
 
     <string-array name="bloodType">
         <item>Your Blood Group</item>
         <item>A+</item>
         <item>B+</item>
-        <item>AB+.</item>
+        <item>AB+</item>
         <item>O+</item>
         <item>O-</item>
+        <item>B-</item>
+        <item>A-</item>
         <item>AB-</item>
     </string-array>
     <string name="title_activity_maps">Map</string>
@@ -103,6 +94,17 @@
     <string name="title_activity_splash_screen">splashScreen</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="saved_lives">Saved Lives</string>
+    <string name="hint_bloodType">Blood Type</string>
+    <string name="status">Status</string>
+    <string name="serach_lable">What Type you Need?</string>
+    <string name="searchBy">Search By Name,City..</string>
+    <string name="noHistoryRecord">No History Records</string>
+    <string name="YourRequests">Your Requests</string>
+    <string name="Notifications">Notifications</string>
+    <string name="noDonationRequest">No Donation Requests</string>
+    <string name="noNotifi">No Notifications</string>
+    <string name="hint_location">Location</string>
 
 
 </resources>

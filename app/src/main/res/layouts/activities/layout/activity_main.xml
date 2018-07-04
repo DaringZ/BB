@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.devster.bloodybank.Views.Main.MainActivity">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+
+        android:layout_height="match_parent">
+        <devlight.io.library.ntb.NavigationTabBar
+            app:ntb_badge_title_color="@color/colorPrimaryDark"
+            android:id="@+id/ntb_vertical"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            app:ntb_preview_colors="@array/dot_active"
+            app:ntb_bg_color="@color/colorPrimaryDark"
+            app:ntb_title_mode="all"
+            app:ntb_title_size="14sp"
+            app:ntb_titled="true" />
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/vp_veritcal_ntb"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+
+
+</RelativeLayout>

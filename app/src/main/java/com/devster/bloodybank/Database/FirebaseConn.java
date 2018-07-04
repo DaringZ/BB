@@ -4,20 +4,23 @@ import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-
-import com.devster.bloodybank.AppUser.User;
-import com.devster.bloodybank.EventBuses.UpdateUI;
+import com.devster.bloodybank.Helpers.EventBuses.UpdateUI;
+import com.devster.bloodybank.Models.UserDetails;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
+import com.google.firebase.FirebaseNetworkException;
+import com.google.firebase.FirebaseTooManyRequestsException;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -30,142 +33,212 @@ import java.util.concurrent.TimeUnit;
 public class FirebaseConn {
 
     private static final String TAG = FirebaseConn.class.getSimpleName();
-    private static FirebaseAuth mAuth=FirebaseAuth.getInstance();;
-    private static DatabaseReference mRootRef = FirebaseDatabase.getInstance().getReference("Users");
-    private static FirebaseUser firebaseUser;
-    private FirebaseAuth.AuthStateListener mAuthListener;
-    private final int SIGNUP_SUCCESS_CODE = 200;
-    private final int SIGNUP_ALREADY_CODE = 300;
-    private EventBus eventBus = EventBus.getDefault();
-    private static String UserId;
-    public Activity callBackactivity;
+    private static FirebaseConn mInstance;
+    private final static FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private final  DatabaseReference mRootRef = FirebaseDatabase.getInstance().getReference();
+    private static FirebaseUser mfirebaseUser;
+    private static String mUserId;
+    private final EventBus eventBus = EventBus.getDefault();
+
+    private Activity callingActivityIs;
     PhoneVerify phoneVerify;
+    private final SharedPreference details = SharedPreference.getInstance();
 
-    public FirebaseConn(Activity activity) {
-        this.callBackactivity=activity;
+    private FirebaseConn() {}
 
+    public static FirebaseConn getInstance() {
+        if (mInstance == null)
+            mInstance = new FirebaseConn();
+        return mInstance;
     }
-    public FirebaseAuth getInstance() {
-        return mAuth;
+
+    public void Initialize(Activity activity) {
+        this.callingActivityIs = activity;
     }
+
+    public DatabaseReference getmRootRef() {
+        return mRootRef;
+    }
+
     public FirebaseUser getCurrentUser() {
-        return mAuth.getCurrentUser();
+        if (mAuth.getCurrentUser() != null)
+            return mAuth.getCurrentUser();
+
+        return null;
     }
+
+    public void setFirebaseUser(FirebaseUser user) {
+        mfirebaseUser = user;
+    }
+
     public String getUserId() {
-        return mAuth.getCurrentUser().getUid();
+        if (mUserId != null)
+            return mAuth.getCurrentUser().getUid();
+        return null;
     }
-    public void setFirebaseUser(FirebaseUser user){
-        this.firebaseUser = user;
-        setUserID();
+
+    public void setUserID(String uid) {
+        mUserId = uid;
     }
-    public void setUserID(){
-        if (firebaseUser != null) {
-            UserId = firebaseUser.getUid();
-        }
-    }
-    public void verifyPhone(String number,String country){
-        phoneVerify=new PhoneVerify(number,country);
+
+    public void verifyPhone(String number) {
+        phoneVerify = new PhoneVerify(number);
         phoneVerify.startPhoneNumberVerification();
     }
-    public void verifyCode(String code){
-        if(phoneVerify!=null)
+
+    public void verifyCode(String code) {
+        if (phoneVerify != null)
             phoneVerify.verifyCode(code);
     }
 
-    public void SignUp(final User user) {
-        mRootRef.child(getUserId()).setValue(user).
-                addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful())
-                            eventBus.post(new UpdateUI(SIGNUP_SUCCESS_CODE,"Register"));
-                        else if(task.getException() instanceof FirebaseAuthUserCollisionException){
-                            eventBus.post(new UpdateUI(SIGNUP_ALREADY_CODE,"Already Register"));
-                        }
-                    }
-                });
+    public void SignUp(final UserDetails user) {
+        final int SIGNUP_SUCCESS_CODE = 200;
+        final int SIGNUP_ALREADY_EMAIL_CODE = 300;
+        final int STATE_NETWORK_LOSS=-88;
+
+        mRootRef.child("Users").orderByChild("email").equalTo(user.getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() != null) {
+                    eventBus.post(new UpdateUI(SIGNUP_ALREADY_EMAIL_CODE, "Already Register"));
+                } else {
+                    user.setId(mUserId);
+                    mRootRef.child("Users").child(getUserId()).setValue(user).
+                            addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        details.saveUserDetails(user);
+                                        eventBus.post(new UpdateUI(SIGNUP_SUCCESS_CODE, "Succes Register"));
+
+                                    } else if (task.getException() instanceof FirebaseNetworkException) {
+                                        eventBus.post(new UpdateUI(STATE_NETWORK_LOSS, "Already Register"));
+                                    }
+                                }
+                            });
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
     }
 
-    public void signOut(){
+    public void signOut() {
         mAuth.signOut();
     }
 
-    public  class PhoneVerify {
+    public class PhoneVerify {
 
         private final String TAG = PhoneVerify.class.getSimpleName();
-        private static final int STATE_CODE_SENT = 2;
-        private static final int STATE_VERIFY_FAILED = 3;
-        private static final int STATE_VERIFY_SUCCESS = 4;
-        private static final int STATE_SIGNIN_FAILED = 5;
-        private static final int STATE_SIGNIN_SUCCESS = 6;
-
         private PhoneAuthProvider.ForceResendingToken mResendToken;
         private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks;
 
         private boolean mVerificationInProgress = false;
         private String mVerificationId;
-        private String phoneNumber,countrycode;
+        private String fullphoneNumber;
         private EventBus eventBus = EventBus.getDefault();
 
 
-        public PhoneVerify(String phoneNumber,String countrycode){
+        public PhoneVerify(String fullphoneNumber) {
 
+            final int STATE_ALREADY_VERIFIED = -4;
             InitializePhoneAuth();
-            this.phoneNumber=phoneNumber;
-            this.countrycode=countrycode;
-            if (mVerificationInProgress) {
-                startPhoneNumberVerification();
-            }
+            this.fullphoneNumber = fullphoneNumber;
+
+            mRootRef.orderByChild("phoneNumberWCode").equalTo(fullphoneNumber).addListenerForSingleValueEvent(new ValueEventListener() {
+
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.getValue() != null) {
+                        //Phone is Already verified.
+                        Log.d(TAG, "Already Verified");
+                        eventBus.post(new UpdateUI(STATE_ALREADY_VERIFIED, "PhoneVerify Already"));
+                    } else {
+                        // New Phone Number to be verified
+
+                        if (mVerificationInProgress) {
+                            Log.d(TAG, "New Number");
+                            startPhoneNumberVerification();
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
         }
 
         private void InitializePhoneAuth() {
-            mCallbacks=new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+            final int STATE_CODE_SENT = 2;
+            final int STATE_NUMBER_INVALID = 3;
+            final int STATE_VERIFY_SUCCESS = 4;
+            final int STATE_NETWORK_LOSS=-88;
+            mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
                 @Override
                 public void onVerificationCompleted(PhoneAuthCredential credential) {
                     Log.d(TAG, "onVerificationCompleted:" + credential);
                     mVerificationInProgress = false;
-                    eventBus.post(new UpdateUI(STATE_VERIFY_SUCCESS,"succes"));
+                    eventBus.post(new UpdateUI(STATE_VERIFY_SUCCESS, "PhoneVerify succes"));
                 }
+
                 @Override
                 public void onVerificationFailed(FirebaseException e) {
                     mVerificationInProgress = false;
-                    eventBus.post(new UpdateUI(STATE_VERIFY_FAILED,e.getMessage()));
+                    if (e instanceof FirebaseTooManyRequestsException) {
+                        // The SMS quota for the project has been exceeded
+                        // ...
+                        Log.d(TAG, "SMS quota exceeded:");
+                    }
+                    else if(e instanceof FirebaseNetworkException){
+                        Log.d(TAG, "No Network Connectivity");
+                        eventBus.post(new UpdateUI(STATE_NETWORK_LOSS, "No Network Connectivity"));
+                    }
+                    else
+                        eventBus.post(new UpdateUI(STATE_NUMBER_INVALID, "PhoneVerify Failed"));
 
                 }
 
                 @Override
                 public void onCodeSent(String verificationId, PhoneAuthProvider.ForceResendingToken token) {
                     super.onCodeSent(verificationId, token);
-                    Log.d(TAG, "onCodeSent:" + verificationId);
+                    Log.d(TAG, "CodeSent:");
                     mVerificationId = verificationId;
                     mResendToken = token;
-                    eventBus.post(new UpdateUI(STATE_CODE_SENT,verificationId));
+                    eventBus.post(new UpdateUI(STATE_CODE_SENT, verificationId));
                 }
             };
 
         }
 
 
-
         public void startPhoneNumberVerification() {
             // [START start_phone_auth]
+            Log.d(TAG, "Number: "+fullphoneNumber);
             PhoneAuthProvider.getInstance().verifyPhoneNumber(
-                    this.phoneNumber,        // Phone number to verify
+                    this.fullphoneNumber,        // Phone number to verify
                     60,                 // Timeout duration
                     TimeUnit.SECONDS,   // Unit of timeout
-                    callBackactivity,               // Activity (for callback binding)
+                    callingActivityIs,               // Activity (for callback binding)
                     mCallbacks);        // OnVerificationStateChangedCallbacks
             // [END start_phone_auth]
 
             mVerificationInProgress = true;
 
         }
-        public void verifyCode(String code){
-            verifyPhoneNumberWithCode(mVerificationId,code);
+
+        public void verifyCode(String code) {
+            verifyPhoneNumberWithCode(mVerificationId, code);
         }
+
         private void verifyPhoneNumberWithCode(String verificationId, String code) {
             PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationId, code);
-
             signInWithPhoneAuthCredential(credential);
         }
 
@@ -175,34 +248,33 @@ public class FirebaseConn {
                     phoneNumber,        // Phone number to verify
                     60,                 // Timeout duration
                     TimeUnit.SECONDS,   // Unit of timeout
-                    callBackactivity,               // Activity (for callback binding)
+                    callingActivityIs,               // Activity (for callback binding)
                     mCallbacks,         // OnVerificationStateChangedCallbacks
                     token);             // ForceResendingToken from callbacks
         }
 
         private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) {
-
-            getInstance().signInWithCredential(credential).addOnCompleteListener(callBackactivity, new OnCompleteListener<AuthResult>() {
+            final int STATE_SIGNIN_FAILED = 5;
+            final int STATE_SIGNIN_SUCCESS = 6;
+            mAuth.signInWithCredential(credential).addOnCompleteListener(callingActivityIs, new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
 
-                    if(task.isSuccessful()){
-                        Log.d(TAG, "signInWithCredential:success");
-                        FirebaseUser user = task.getResult().getUser();
-                        mRootRef.child(user.getUid()).child("PhoneNumberWCode").setValue(phoneNumber);
-                        mRootRef.child(user.getUid()).child("CountryCode").setValue(countrycode);
-                        eventBus.post(new UpdateUI(STATE_SIGNIN_SUCCESS,"signin"));
+                    if (task.isSuccessful()) {
+                        Log.d(TAG, "Phone signInWithCredential:success");
+                        FirebaseUser fireUser = task.getResult().getUser();
+                        setFirebaseUser(fireUser);
+                        setUserID(fireUser.getUid());
+                        details.savePhoneDetails(fullphoneNumber);
+                        eventBus.post(new UpdateUI(STATE_SIGNIN_SUCCESS, "Phone signInWithCredential:success"));
                         // [START_EXCLUDE]
-                    }
-                    else {
-                        eventBus.post(new UpdateUI(STATE_SIGNIN_FAILED,"fail"));
+                    } else {
+                        eventBus.post(new UpdateUI(STATE_SIGNIN_FAILED, "Phone signInfail"));
                     }
                 }
             });
-
         }
-
-
     }
+
 
 }

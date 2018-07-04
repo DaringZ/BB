@@ -68,6 +68,8 @@ public class FirebaseStorage {
             @Override
             public void onRightClicked(int position) {
                 super.onRightClicked(position);
+
+
             }
         });
         ItemTouchHelper itemTouchhelper = new ItemTouchHelper(swipeController);
@@ -79,6 +81,7 @@ public class FirebaseStorage {
 
             }
         });
+        //&-3+#++#+#;#-@+#-#+
     }
 
 

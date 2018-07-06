@@ -3,13 +3,10 @@ package com.devster.bloodybank.Views.Phases.Portrait;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -55,7 +52,6 @@ public class Phase1 extends Fragment implements View.OnClickListener {
     private TextView tv_verify;
     private Button snd_btn, verify_btn, resend_btn, btn_proceed;
 
-    private ProgressDialog progressDialog;
     private LoadToast mytoast;
     private boolean VERIFIED = false;
 
@@ -82,12 +78,6 @@ public class Phase1 extends Fragment implements View.OnClickListener {
         return view;
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        Log.i(TAG, "OnViewCreated");
-
-    }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -99,7 +89,8 @@ public class Phase1 extends Fragment implements View.OnClickListener {
     private void init() {
         mytoast=new LoadToast(context)
         .setProgressColor(Color.GREEN)
-        .setTranslationY(1000)
+        .setTranslationY(1400)
+                .setBorderWidthDp(3)
         .setBorderColor(Color.WHITE);
 
         register_page1 = view.findViewById(R.id.register_page1);
@@ -244,12 +235,11 @@ public class Phase1 extends Fragment implements View.OnClickListener {
             if (!TextUtils.isEmpty(phoneNumber)) {
                 mytoast.setText("Sending Code");
                 mytoast.show();
-                //Toast.makeText(context, "number " + fullnumber, Toast.LENGTH_SHORT).show();
                 callbackRegisterTo.sendPhoneDetailsForVerify(fullnumber, countryCode);
 
             } else {
                 Log.d(TAG, "ET_Phone Field is Empty: " + et_phnNumber.getText().toString());
-                et_phnNumber.setError("Field is empty.");
+                et_phnNumber.setError("Field is Required.");
             }
         } else {
             et_phnNumber.setError("Field is invalid.");
@@ -269,11 +259,11 @@ public class Phase1 extends Fragment implements View.OnClickListener {
                 callbackRegisterTo.verifySentCode(code);
             } else {
                 Log.d(TAG, "ET_CODE Field is Empty: " + et_code.getText().toString());
-                et_code.setError("Field is empty.");
+                et_code.setError("Field is Required.");
 
             }
         } else
-            et_code.setError("Field is empty.");
+            et_code.setError("Field is Invalid.");
 
     }
 
@@ -286,7 +276,7 @@ public class Phase1 extends Fragment implements View.OnClickListener {
         new android.os.Handler().postDelayed(
                 new Runnable() {
                     public void run() {
-                        mytoast.success();
+                        mytoast.hide();
                         startPhase2();
                     }
                 }, 1500);
@@ -308,21 +298,27 @@ public class Phase1 extends Fragment implements View.OnClickListener {
 
             case STATE_NETWORK_LOSS:
                 mytoast.error();
-                showAlerter();
+                callbackRegisterTo.showNetworkAlert();
                 return;
             case STATE_NUMBER_INVALID:
+                mytoast.hide();
+                mytoast.setText("Invalid Number");
+                mytoast.show();
                 mytoast.error();
-                Snackbar.make(register_page1, "PhoneVerify Number Invalid", Snackbar.LENGTH_LONG).show();
                 return;
 
             case STATE_ALREADY_VERIFIED:
-                Toast.makeText(context,"Already Verified",Toast.LENGTH_LONG).show();
+                mytoast.hide();
+                mytoast.setText("Already Verified");
+                mytoast.show();
+                mytoast.success();
                 return;
 
             case STATE_VERIFY_SUCCESS:
                 mytoast.success();
                 snd_btn.setEnabled(false);
-                snd_btn.setTextColor(context.getResources().getColor(R.color.colorPrimaryDark));
+                snd_btn.setBackgroundColor(Color.LTGRAY);
+                snd_btn.setTextColor(context.getResources().getColor(R.color.colorAccent));
                 return;
 
             case STATE_CODE_SENT:
@@ -351,7 +347,7 @@ public class Phase1 extends Fragment implements View.OnClickListener {
                                 resend_btn.setVisibility(View.GONE);
                                 verify_btn.setVisibility(View.GONE);
                             }
-                        }, 1800);
+                        }, 1000);
 
                 return;
             case STATE_SIGNIN_FAILED:

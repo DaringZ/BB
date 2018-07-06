@@ -1,4 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="yro">yr</string>
+    <string name="request">Request</string>
+    <string name="lable1">Requested Donation From</string>
+    <string name="hint_atHospital">At Hospital</string>
+    <string name="hint_lable2">at</string>
+    <string name="sentTime">Time</string>
+    <string name="hint_reqStatus">Status</string>
+    <string name="Accepted" />
+    <string name="accepted">Accepted</string>
+    <string name="pending">Pending</string>
+    <string name="signInwPhone">SignIn With Phone</string>
+    <string name="logo">BloodyBank</string>
+    <string name="notifTitle">sent you request</string>
+    <string name="accept">ACCEPT</string>
+    <string name="call">CALL</string>
+    <string name="signin">Sign In</string>
+    <string name="signupwPhone">Sign Up</string>
+    <string name="signup">NO ACCOUNT? SIGN UP</string>
+    <string name="noResults">No Results</string>
 </resources>

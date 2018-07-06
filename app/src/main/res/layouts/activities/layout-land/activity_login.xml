@@ -112,18 +112,20 @@
         </LinearLayout>
 
 
-
         <LinearLayout
             android:id="@+id/layoutPanel_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
+            android:paddingBottom="20dp"
             android:gravity="center_vertical|end"
             android:orientation="horizontal">
 
             <Button
                 android:id="@+id/btn_proceed"
                 android:layout_width="170dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
                 android:layout_height="wrap_content"
                 android:background="@drawable/btn_proceed_style"
                 android:ems="7"
@@ -132,7 +134,7 @@
                 android:text="@string/proceed"
                 android:textColor="@color/colorAccent"
                 android:textSize="20sp"
-                 />
+                />
 
         </LinearLayout>
 

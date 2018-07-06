@@ -5,14 +5,11 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
 import android.view.WindowManager;
-import android.widget.TextView;
 
 import com.devster.bloodybank.Database.FirebaseConn;
 import com.devster.bloodybank.Database.FirebaseStorage;
@@ -21,7 +18,7 @@ import com.devster.bloodybank.R;
 import com.devster.bloodybank.Views.Fragments.AppGuideFragment;
 import com.devster.bloodybank.Views.Fragments.HistoryFragment;
 import com.devster.bloodybank.Views.Fragments.HomeFragment;
-import com.devster.bloodybank.Views.Fragments.RequestsFragment;
+import com.devster.bloodybank.Views.Fragments.MyRequestsFragment;
 import com.devster.bloodybank.Views.Fragments.SearchDonorsFragment;
 import com.devster.bloodybank.Views.Fragments.scanDonorsFragment;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -61,26 +58,38 @@ public class MainActivity extends AppCompatActivity implements CallBackMainTo {
     }
 
     @Override
-    public void stopToasty(int stateCode) {
+    public void stopToasty(int stateCode,String txt) {
         if(stateCode==5555)
             mytoast.success();
-        else if(stateCode==-5555)
-            mytoast.error();
+        else if(stateCode==-5555) {
+            //mytoast.hide();
+            mytoast=new LoadToast(this)
+                    .setText(txt)
+                    .setTranslationY(1500)
+                    .setTextColor(getResources().getColor(R.color.colorPrimaryDark))
+                    .setBorderColor(Color.GREEN).show();
+            new android.os.Handler().postDelayed(
+                    new Runnable() {
+                        public void run() {
+                            mytoast.hide();
+                        }
+                    }, 1100);
+
+        }
     }
 
     private FirebaseConn firebaseConn;
     private FirebaseStorage storage;
-
-    private View view;
-    private TextView userName,userNumber;
+    private ViewPager mPager;
+    private FragmentPagerAdapter mAdapter;
 
    @Override
     protected void onCreate(Bundle savedInstanceState) {
        super.onCreate(savedInstanceState);
        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
        setContentView(R.layout.activity_main);
+       Log.d(TAG,"Created ");
        init();
 
        Log.d(TAG,"curent Token: "+ FirebaseInstanceId.getInstance().getToken());
@@ -92,8 +101,29 @@ public class MainActivity extends AppCompatActivity implements CallBackMainTo {
        storage=FirebaseStorage.getInstance();
        storage.Initialize(this,firebaseConn);
 
-       ViewPager viewPager = (ViewPager) findViewById(R.id.vp_veritcal_ntb);
-        viewPager.setAdapter(new MyViewPagerAdapter(getSupportFragmentManager()));
+       mPager = (ViewPager) findViewById(R.id.vp_veritcal_ntb);
+        mAdapter=new FragmentPagerAdapter(getSupportFragmentManager()){
+           private final Fragment[] mFragments=new Fragment[]{
+                   new HomeFragment(),
+                   new scanDonorsFragment(),
+                   new SearchDonorsFragment(),
+                   new MyRequestsFragment(),
+                   new HistoryFragment(),new AppGuideFragment(),
+
+           };
+
+           @Override
+           public Fragment getItem(int position) {
+               return mFragments[position];
+           }
+
+           @Override
+           public int getCount() {
+               return mFragments.length;
+           }
+       };
+
+        mPager.setAdapter(mAdapter);
 
         final String[] colors = getResources().getStringArray(R.array.ntb_color);
 
@@ -152,7 +182,7 @@ public class MainActivity extends AppCompatActivity implements CallBackMainTo {
 
         navigationTabBar.setModels(models);
         navigationTabBar.setBadgeBgColor(R.color.colorPrimary);
-        navigationTabBar.setViewPager(viewPager, 0);
+        navigationTabBar.setViewPager(mPager, 0);
 
 
     }
@@ -192,53 +222,6 @@ public class MainActivity extends AppCompatActivity implements CallBackMainTo {
     protected void onDestroy() {
 
         super.onDestroy();
-    }
-
-    private class MyViewPagerAdapter extends FragmentPagerAdapter{
-
-        MyViewPagerAdapter(FragmentManager manager){
-            super(manager);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            switch(position){
-                case 0:
-                    HomeFragment home=new HomeFragment();
-                    Log.d("Navigation1",String.valueOf(position));
-                    return home;
-                case 1:
-                    scanDonorsFragment scan=new scanDonorsFragment();
-                    Log.d("Navigation2",String.valueOf(position));
-                    return scan;
-                case 2:
-                    SearchDonorsFragment search=new SearchDonorsFragment();
-                    Log.d("Navigation3",String.valueOf(position));
-                    return search;
-                case 3:
-                    Log.d("Navigation4",String.valueOf(position));
-                    RequestsFragment requests=new RequestsFragment();
-                    return requests;
-                case 4:
-                    Log.d("Navigation5",String.valueOf(position));
-                    HistoryFragment history=new HistoryFragment();
-                    return history;
-                case 5:
-                    Log.d("Navigation5",String.valueOf(position));
-                    AppGuideFragment guide=new AppGuideFragment();
-                    return guide;
-
-            }
-
-            return new scanDonorsFragment();
-        }
-
-        @Override
-        public int getCount() {
-            return 6;
-        }
-
-
     }
 
 

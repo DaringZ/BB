@@ -3,6 +3,7 @@ package com.devster.bloodybank.Views.Fragments;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.devster.bloodybank.Database.FirebaseStorage;
 import com.devster.bloodybank.Helpers.Adapters.RecyclerViewAdapter;
@@ -40,6 +42,7 @@ public class SearchDonorsFragment extends Fragment {
     private final ArrayList<String> textItems = new ArrayList<>();
     private String toSearch = "";
     private EditText et_searchField;
+    private TextView lbl;
     private RecyclerView rv, rv_search_result;
     Toolbar toolbar;
     CollapsingToolbarLayout collapsingToolbarLayout;
@@ -64,13 +67,31 @@ public class SearchDonorsFragment extends Fragment {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_search_donors, container, false);
         callBackMainTo = (CallBackMainTo) context;
-        init();
+
         return view;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        init();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        setupRecycler1();
     }
 
     private void init() {
 
-
+        lbl=view.findViewById(R.id.lblnoResults);
         toolbar = view.findViewById(R.id.mToolbar);
         collapsingToolbarLayout = view.findViewById(R.id.collapsing_toolbar);
         et_searchField = view.findViewById(R.id.et_searchField);
@@ -107,9 +128,6 @@ public class SearchDonorsFragment extends Fragment {
     private void displaySearchResults(){
         FirebaseStorage.getInstance().searchUser(rv_search_result, toSearch);
     }
-    private void setupRecycler2(){
-
-    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void OnEvent(UpdateUI state) {
@@ -117,10 +135,10 @@ public class SearchDonorsFragment extends Fragment {
         final int SEARCH_NOFOUND_CODE = -5555;
         switch (state.getState()) {
             case SEARCH_SUCCESS_CODE:
-                callBackMainTo.stopToasty(SEARCH_SUCCESS_CODE);
-
+                callBackMainTo.stopToasty(SEARCH_SUCCESS_CODE,"");
                 break;
             case SEARCH_NOFOUND_CODE:
+                callBackMainTo.stopToasty(SEARCH_NOFOUND_CODE,"No Results");
                 break;
         }
     }

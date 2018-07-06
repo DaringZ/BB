@@ -35,10 +35,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="30dp"
+                    android:fontFamily="@font/nunito_semibold_italic"
                     android:text="@string/serach_lable"
                     android:textColor="@color/white"
                     android:textSize="36sp"
-                    android:fontFamily="@font/nunito_semibold_italic"
                     android:textStyle="bold" />
 
             </LinearLayout>
@@ -48,8 +48,8 @@
                 android:layout_height="100dp"
                 android:layout_centerHorizontal="true"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="170dp"
                 android:layout_marginBottom="2dp"
+                android:layout_marginTop="170dp"
                 android:padding="10dp"
                 app:cardBackgroundColor="@color/white"
                 app:cardCornerRadius="20dp"
@@ -74,17 +74,18 @@
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="pin"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+
             <EditText
                 android:id="@+id/et_searchField"
                 android:layout_width="280dp"
                 android:layout_height="50dp"
                 android:layout_gravity="center_horizontal|bottom"
+                android:layout_marginBottom="3dp"
                 android:background="@drawable/search_field_style"
                 android:fontFamily="@font/nunito_semibold_italic"
                 android:hint="@string/searchBy"
                 android:paddingEnd="10dp"
                 android:paddingStart="10dp"
-                android:layout_marginBottom="3dp"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="16sp"
                 app:layout_collapseMode="pin" />
@@ -93,25 +94,41 @@
     </android.support.design.widget.AppBarLayout>
 
 
-
-
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rv_searchR"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="5dp"
             android:clipToPadding="false"
             android:overScrollMode="never"
-            tools:listitem="@layout/layout_search_results"
-            >
+            android:padding="5dp"
+            tools:listitem="@layout/layout_search_results">
 
         </android.support.v7.widget.RecyclerView>
     </FrameLayout>
 
+    <TextView
+        android:id="@+id/lblnoResults"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|center_horizontal|top"
+        android:fontFamily="@font/nunito_semibold_italic"
+        android:shadowColor="@color/black"
+        android:shadowDx="1"
+        android:shadowDy="1"
+        android:shadowRadius="2"
+        android:text="@string/noResults"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@color/colorPrimaryDark"
+        android:layout_marginTop="300dp"
+        android:textSize="28sp"
+        android:visibility="gone"
+
+         />
 
 
 </android.support.design.widget.CoordinatorLayout>

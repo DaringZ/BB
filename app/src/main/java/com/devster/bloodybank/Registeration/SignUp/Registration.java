@@ -6,12 +6,10 @@ import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Window;
 import android.view.WindowManager;
 
-import com.devster.bloodybank.Database.FirebaseConn;
-import com.devster.bloodybank.Database.SharedPreference;
+import com.devster.bloodybank.BaseActivity;
 import com.devster.bloodybank.Helpers.EventBuses.UpdateUI;
 import com.devster.bloodybank.Helpers.Interfaces.CallbackRegisterTo;
 import com.devster.bloodybank.Models.UserDetails;
@@ -20,25 +18,19 @@ import com.devster.bloodybank.Views.Main.MainActivity;
 import com.devster.bloodybank.Views.Phases.Portrait.Phase1;
 import com.devster.bloodybank.Views.Phases.Portrait.Phase2;
 import com.devster.bloodybank.Views.splashScreen;
-import com.tapadoo.alerter.Alerter;
-
-import net.steamcrafted.loadtoast.LoadToast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-public class Registration extends AppCompatActivity implements CallbackRegisterTo {
+public class Registration extends BaseActivity implements CallbackRegisterTo {
 
-
-    private final UserDetails appUser = new UserDetails();
-    private LoadToast mytoast;
-
+    private static final String TAG = Registration.class.getSimpleName();
 
     @Override
     public void sendPhoneDetailsForVerify(String fullNumber, String countryCode) {
-        appUser.setPhoneNumberWCode(fullNumber);
-        appUser.setCountryCode(countryCode);
+        getAppUser().setPhoneNumberWCode(fullNumber);
+        getAppUser().setCountryCode(countryCode);
         verifyPhone(fullNumber);
 
     }
@@ -51,40 +43,44 @@ public class Registration extends AppCompatActivity implements CallbackRegisterT
     @Override
     public void sendUserDetailsForRegistering(String name, String bloodType, int age,boolean isAdult, String gender, String email, double lat, double lng,String city,String country) {
 
-        appUser.setName(name);
-        appUser.setBloodType(bloodType);
-        appUser.setAge(age);
-        appUser.setGender(gender);
-        appUser.setEmail(email);
-        appUser.setLat(lat);
-        appUser.setLng(lng);
-        appUser.setCity(city);
-        appUser.setCountry(country);
-        appUser.setAdult(isAdult);
+        getAppUser().setName(name);
+        getAppUser().setBloodType(bloodType);
+        getAppUser().setAge(age);
+        getAppUser().setGender(gender);
+        getAppUser().setEmail(email);
+        getAppUser().setLat(lat);
+        getAppUser().setLng(lng);
+        getAppUser().setCity(city);
+        getAppUser().setCountry(country);
+        getAppUser().setAdult(isAdult);
 
-        Register(appUser);
+        Register(getAppUser());
 
     }
 
     @Override
     public boolean isNetworkAvailable() {
         ConnectivityManager cm = (ConnectivityManager)getSystemService(CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        if (netInfo != null && netInfo.isConnectedOrConnecting()) {
-            return true;
-        } else {
-            showAlerter();
-            return false;
+        boolean flag=false;
+        if(cm.getActiveNetworkInfo()!=null){
+            NetworkInfo netInfo = cm.getActiveNetworkInfo();
+            if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+                flag=true;
+            } else {
+                showAlerter();
+                flag=false;
+            }
         }
+        else
+            flag=false;
+
+        return flag;
     }
 
-    private static final String TAG = Registration.class.getSimpleName();
-
-    private final SharedPreference preference = SharedPreference.getInstance();
-    private final FirebaseConn firebaseConn = FirebaseConn.getInstance();
-    private final EventBus eventBus = EventBus.getDefault();
-
-
+    @Override
+    public void showNetworkAlert() {
+        showAlerter();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,17 +91,14 @@ public class Registration extends AppCompatActivity implements CallbackRegisterT
         setContentView(R.layout.activity_registration);
         getSupportActionBar().hide();
 
-        firebaseConn.Initialize(this);
-        if (firebaseConn.getCurrentUser() == null) {
+        InitializePreference(this);
+        setFireConn(this);
+        if (getConn().getCurrentUser() == null) {
             startPhase1();
-        } else if (firebaseConn.getCurrentUser() != null && !preference.isRegister()) {
+        } else if (getConn().getCurrentUser() != null && !getPreference().isRegister()) {
             startPhase2();
         }
-        registerSubscriber();
-        mytoast=new LoadToast(this)
-                .setProgressColor(Color.GREEN)
-                .setTranslationY(1000)
-                .setBorderColor(Color.WHITE);
+        EventBus.getDefault().register(this);
 
 
     }
@@ -135,50 +128,38 @@ public class Registration extends AppCompatActivity implements CallbackRegisterT
         trans.replace(R.id.frag_content, phase2).commit();
     }
 
-
     @Override
     protected void onStart() {
         super.onStart();
-        if (isLogged() && preference.isRegister()) {
+        if ( getConn().getCurrentUser() != null && getPreference().isRegister()) {
             startMainActivity();
         }
 
     }
 
-    private boolean isLogged() {
-        return firebaseConn.getCurrentUser() != null;
-    }
+
+
 
     public void verifyPhone(String number) {
-        firebaseConn.verifyPhone(number);
+        getConn().verifyPhone(number);
     }
 
     public void verifyCode(String code) {
-        firebaseConn.verifyCode(code);
+        getConn().verifyCode(code);
     }
 
     public void Register(final UserDetails user) {
-        mytoast.setText("This may take a while.");
-        mytoast.show();
-
+        showToasty(this,"This may take a while.",1400,Color.GREEN,Color.WHITE);
         new android.os.Handler().postDelayed(
                 new Runnable() {
                     public void run() {
-                        firebaseConn.SignUp(user);
+                        getConn().SignUp(user);
                     }
-                }, 2000);
-
+                }, 1500);
 
     }
 
-    public void showAlerter(){
-        Alerter.create(this)
-                .setText("No Internet Connectivity")
-                .setBackgroundColorRes(R.color.color_error)
-                .setDuration(1500)
-                .setIcon(R.mipmap.wifi_alert)
-                .show();
-    }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void OnEvent(UpdateUI state) {
         final int SIGNUP_SUCCESS_CODE = 200;
@@ -186,13 +167,13 @@ public class Registration extends AppCompatActivity implements CallbackRegisterT
         switch (state.getState()) {
             case SIGNUP_SUCCESS_CODE:
                 setResult(RESULT_FIRST_USER);
-                preference.setRegister(true);
-                mytoast.success();
+                getPreference().setRegister(true);
+                showSuccecs();
                 finish();
                 startActivity(new Intent(Registration.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                 return;
             case SIGNUP_ALREADY_CODE:
-                mytoast.hide();
+                showError();
                 setResult(RESULT_OK, new Intent().putExtra("code", SIGNUP_ALREADY_CODE));
                 finish();
                 return;
@@ -202,18 +183,10 @@ public class Registration extends AppCompatActivity implements CallbackRegisterT
 
     @Override
     protected void onDestroy() {
-        unsubscride();
+        EventBus.getDefault().unregister(this);
         super.onDestroy();
 
     }
 
-    private void registerSubscriber() {
-        eventBus.getDefault().register(this);
 
-    }
-
-    public void unsubscride() {
-        eventBus.getDefault().unregister(this);
-
-    }
 }

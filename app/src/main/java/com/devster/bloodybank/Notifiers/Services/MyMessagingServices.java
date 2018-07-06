@@ -39,7 +39,13 @@ public class MyMessagingServices extends FirebaseMessagingService {
 
     }
 
-    private void sendNotification(String reqBlood,String title,String contact) {
+    @Override
+    public void onMessageSent(String s) {
+        super.onMessageSent(s);
+
+    }
+
+    private void sendNotification(String reqBlood, String title, String contact) {
 
         Intent intent=new Intent(this,MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

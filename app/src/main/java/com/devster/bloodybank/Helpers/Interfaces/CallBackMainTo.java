@@ -7,5 +7,5 @@ package com.devster.bloodybank.Helpers.Interfaces;
 public interface CallBackMainTo {
     public boolean isNetworkAvailable();
     public void loadToasty(String text);
-    public void stopToasty(int stateCode);
+    public void stopToasty(int stateCode,String text);
 }

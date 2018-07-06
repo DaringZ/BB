@@ -13,14 +13,17 @@ public class RequestDetails {
     private String requestedTo;
     private int age;
 
-    public RequestDetails(String senderID,String requestedTo,String blood, String atHospital, int age) {
+    public RequestDetails(){}
+    public RequestDetails(String senderID, String requestedTo, String blood, String atHospital, int age) {
         this.blood = blood;
         this.atHospital = atHospital;
         this.requestedTo = requestedTo;
         this.age = age;
         this.senderID=senderID;
+
     }
 
+    //Getters
     public String getBlood() {
         return blood;
     }
@@ -40,4 +43,5 @@ public class RequestDetails {
     public String getSenderID(){
         return senderID;
     }
+
 }

@@ -3,7 +3,6 @@ package com.devster.bloodybank.Views.Main;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.view.View;
 import android.view.Window;
@@ -12,19 +11,18 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.devster.bloodybank.Database.SharedPreference;
+import com.devster.bloodybank.BaseActivity;
 import com.devster.bloodybank.Helpers.Adapters.ViewPagerAdapter;
 import com.devster.bloodybank.R;
-import com.devster.bloodybank.Registeration.SignUp.Registration;
+import com.devster.bloodybank.Registeration.Login.LoginActivity;
 
-public class WelcomeActivity extends AppCompatActivity {
+public class WelcomeActivity extends BaseActivity {
 
     private final int TOTAL_SLIDER=4;
     private ViewPager viewPager;
     private ViewPagerAdapter viewPagerAdapter;
     private LinearLayout dots_layout;
     private TextView[] tv_dots;
-    private TextView Slider_desc;
     private Button btn_next;
 
     @Override
@@ -34,10 +32,10 @@ public class WelcomeActivity extends AppCompatActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        final SharedPreference sliderManager=SharedPreference.getInstance();
-        sliderManager.Initialize(getApplicationContext());
-        if(sliderManager.isAlreadyOpen()){
-            startRegisterActivity();
+
+        InitializePreference(this);
+        if(getSliderManager().isAlreadyOpen()){
+            startLoginActivity();
         }
 
         setContentView(R.layout.activity_welcome);
@@ -54,7 +52,7 @@ public class WelcomeActivity extends AppCompatActivity {
                 if(current<TOTAL_SLIDER)
                     viewPager.setCurrentItem(current);
                 else
-                    startRegisterActivity();
+                    startLoginActivity();
             }
         });
         viewPager=(ViewPager) findViewById(R.id.viewPager);
@@ -72,9 +70,7 @@ public class WelcomeActivity extends AppCompatActivity {
 
                 if(position==TOTAL_SLIDER-1){
                     btn_next.setText(getResources().getString(R.string.btn_fnish));
-                    sliderManager.setRan(true);
-//                    final BaseActivity gv=(BaseActivity) getApplicationContext();
-//                    gv.setStorage(sliderManager);
+                    getSliderManager().setRan(true);
                 }
                 else
                     btn_next.setText(getResources().getString(R.string.btn_next));
@@ -114,8 +110,8 @@ public class WelcomeActivity extends AppCompatActivity {
         return viewPager.getCurrentItem()+i;
     }
 
-    private void startRegisterActivity(){
-        Intent intent=new Intent(WelcomeActivity.this, Registration.class);
+    private void startLoginActivity(){
+        Intent intent=new Intent(WelcomeActivity.this, LoginActivity.class);
         startActivity(intent);
         finish();
     }

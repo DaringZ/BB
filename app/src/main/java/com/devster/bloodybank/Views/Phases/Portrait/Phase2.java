@@ -2,7 +2,6 @@ package com.devster.bloodybank.Views.Phases.Portrait;
 
 
 import android.app.Fragment;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -52,7 +51,6 @@ public class Phase2 extends Fragment implements AdapterView.OnItemSelectedListen
     private RelativeLayout SIGNUP_LAYOUT;
     private Context context;
     private View view;
-    private ProgressDialog progressDialog;
 
     TextView tv_error;
     EditText et_fullname,et_email,et_age;
@@ -128,8 +126,7 @@ public class Phase2 extends Fragment implements AdapterView.OnItemSelectedListen
                 .setTranslationY(500)
                 .setBorderColor(Color.WHITE);
         hideKeyboard();
-        progressDialog = new ProgressDialog(context,
-                android.R.style.Theme_Holo);
+
         SIGNUP_LAYOUT=view.findViewById(R.id.register_page2);
 
         tv_error=view.findViewById(R.id.tv_error);
@@ -215,8 +212,6 @@ public class Phase2 extends Fragment implements AdapterView.OnItemSelectedListen
 
                 if(callbackRegisterTo.isNetworkAvailable()){
                     if(isValidate()) {
-                        mytoast.setText("Proceeding..");
-                        mytoast.show();
 
                         new android.os.Handler().postDelayed(
                                 new Runnable() {
@@ -224,7 +219,7 @@ public class Phase2 extends Fragment implements AdapterView.OnItemSelectedListen
                                         callbackRegisterTo.sendUserDetailsForRegistering(_name,_bloodType,_age,_adult,_gender,_email,latitute,longitude,city,country);
 
                                     }
-                                }, 1500);
+                                }, 1200);
                     }
 
                 }
@@ -232,7 +227,7 @@ public class Phase2 extends Fragment implements AdapterView.OnItemSelectedListen
 
             case R.id.btn_pickLocation:
                 pickLocation();
-                return;
+                break;
         }
     }
 
@@ -256,7 +251,9 @@ public class Phase2 extends Fragment implements AdapterView.OnItemSelectedListen
             switch (requestCode){
                 case REQ_PICK_LOCATION:
                     Place place = PlacePicker.getPlace(context, data);
+
                     Snackbar.make(SIGNUP_LAYOUT,"Everything is Good to Go",Snackbar.LENGTH_LONG).show();
+
                     setLatitute(place.getLatLng().latitude);
                     setLongitude(place.getLatLng().longitude);
                     setAddress();
@@ -302,7 +299,6 @@ public class Phase2 extends Fragment implements AdapterView.OnItemSelectedListen
         set_name(et_fullname.getText().toString());
         set_email(et_email.getText().toString());
         set_age(Integer.parseInt(et_age.getText().toString()));
-        //Toast.makeText(context,_name+" "+_email,Toast.LENGTH_SHORT).show();
         if (!TextUtils.isEmpty(_name)) {
             if (_name.length() < 5) {
                 et_fullname.setError("too small");
@@ -310,7 +306,7 @@ public class Phase2 extends Fragment implements AdapterView.OnItemSelectedListen
             }else et_fullname.setError(null);
         }
         else {
-            et_fullname.setError("Field is empty");
+            et_fullname.setError("Field is Required");
             valid = false;
         }
         if (!TextUtils.isEmpty(_email)){
@@ -321,12 +317,12 @@ public class Phase2 extends Fragment implements AdapterView.OnItemSelectedListen
 
         }
         else {
-            et_email.setError("Field is empty");
+            et_email.setError("Field is Required");
             valid=false;
         }
         if(TextUtils.isEmpty(_bloodType)){
             TextView error=(TextView) spinner_bloodType.getSelectedView();
-            error.setError("Field is empty");
+            error.setError("Field is Required");
             valid=false;
         }
         if(TextUtils.isEmpty(_gender)){
@@ -340,13 +336,9 @@ public class Phase2 extends Fragment implements AdapterView.OnItemSelectedListen
         else if(_age>=18){
             set_adult(true);
         }
-
-
-
         return valid;
 
     }
-
 
     private void setBloodType(String selectedItemText) {
         this._bloodType=selectedItemText;

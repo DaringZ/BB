@@ -19,6 +19,7 @@ public class SharedPreference {
     private final String _globalPreferenceName="appPreference";
     private final String _CHECK="check";
     private final String _REGISTER="register";
+    private final String _LOGIN="register";
     private final String _ID="id";
     private final String _PhnNumber="number";
     private final String _NAME="name";
@@ -58,12 +59,21 @@ public class SharedPreference {
         return pref.getBoolean(_REGISTER,false);
     }
 
+    public boolean isLogin(){
+        return pref.getBoolean(_LOGIN,false);
+    }
+    public void setLogin(boolean isLogin){
+        editor.putBoolean(_LOGIN,isLogin);
+        editor.commit();
+    }
+
     public boolean isAlreadyOpen(){
         return pref.getBoolean(_CHECK,false);
 
     }
-    public void savePhoneDetails(String number){
+    public void savePhoneDetails(String number,String id){
         editor.putString(_PhnNumber,number);
+        editor.putString(_ID,id);
         editor.commit();
     }
     public void saveUserDetails(UserDetails user){
@@ -91,5 +101,6 @@ public class SharedPreference {
     public Double[] getLocation(){
         return new Double[]{(double)pref.getFloat(_LAT,0),(double)pref.getFloat(_LON,0)};
     }
+
 
 }

@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
  * Created by MOD on 5/5/2018.
  */
 
-public class FirebaseConn {
+public class FirebaseConn{
 
     private static final String TAG = FirebaseConn.class.getSimpleName();
     private static FirebaseConn mInstance;
@@ -41,8 +41,13 @@ public class FirebaseConn {
     private final EventBus eventBus = EventBus.getDefault();
 
     private Activity callingActivityIs;
-    PhoneVerify phoneVerify;
+    private PhoneVerify phoneVerify;
     private final SharedPreference details = SharedPreference.getInstance();
+    private final int SIGNUP_SUCCESS_CODE = 200;
+    private final int SIGNIP_SUCCESS_CODE = 1000;
+    private final int SIGNIP_Faluir_CODE=-1000;
+    private final int SIGNUP_ALREADY_EMAIL_CODE = 300;
+    private final int STATE_NETWORK_LOSS=-88;
 
     private FirebaseConn() {}
 
@@ -67,17 +72,17 @@ public class FirebaseConn {
         return null;
     }
 
-    public void setFirebaseUser(FirebaseUser user) {
+    private void setFirebaseUser(FirebaseUser user) {
         mfirebaseUser = user;
     }
 
     public String getUserId() {
-        if (mUserId != null)
+        if(mAuth.getCurrentUser()!=null)
             return mAuth.getCurrentUser().getUid();
-        return null;
+        else return null;
     }
 
-    public void setUserID(String uid) {
+    private void setUserID(String uid) {
         mUserId = uid;
     }
 
@@ -92,18 +97,16 @@ public class FirebaseConn {
     }
 
     public void SignUp(final UserDetails user) {
-        final int SIGNUP_SUCCESS_CODE = 200;
-        final int SIGNUP_ALREADY_EMAIL_CODE = 300;
-        final int STATE_NETWORK_LOSS=-88;
+
 
         mRootRef.child("Users").orderByChild("email").equalTo(user.getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() != null) {
                     eventBus.post(new UpdateUI(SIGNUP_ALREADY_EMAIL_CODE, "Already Register"));
                 } else {
                     user.setId(mUserId);
-                    mRootRef.child("Users").child(getUserId()).setValue(user).
+                    mRootRef.child("Users").child(getCurrentUser().getUid()).setValue(user).
                             addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
@@ -119,7 +122,7 @@ public class FirebaseConn {
                 }
             }
             @Override
-            public void onCancelled(DatabaseError databaseError) {
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
         });
@@ -127,7 +130,30 @@ public class FirebaseConn {
 
     }
 
+    public void signIn(String Fullnum){
+        Log.d(TAG, "SigningIn");
+        mRootRef.child("Users").orderByChild("phoneNumberWCode").equalTo(Fullnum).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() != null) {
+                    eventBus.post(new UpdateUI(SIGNIP_SUCCESS_CODE, "Sign In Success"));
+                    UserDetails user=dataSnapshot.getValue(UserDetails.class);
+                    details.saveUserDetails(user);
+                    details.setLogin(true);
+
+                }
+                else{
+                    eventBus.post(new UpdateUI(SIGNIP_Faluir_CODE, "Sign In Faluire"));
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d("SignIn Error ",databaseError.getMessage());
+            }
+        });
+    }
     public void signOut() {
+        details.setLogin(false);
         mAuth.signOut();
     }
 
@@ -142,17 +168,15 @@ public class FirebaseConn {
         private String fullphoneNumber;
         private EventBus eventBus = EventBus.getDefault();
 
-
+        public PhoneVerify(){}
         public PhoneVerify(String fullphoneNumber) {
 
             final int STATE_ALREADY_VERIFIED = -4;
-            InitializePhoneAuth();
             this.fullphoneNumber = fullphoneNumber;
-
-            mRootRef.orderByChild("phoneNumberWCode").equalTo(fullphoneNumber).addListenerForSingleValueEvent(new ValueEventListener() {
-
+            InitializePhoneAuth();
+            mRootRef.child("Users").orderByChild("phoneNumberWCode").equalTo(fullphoneNumber).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.getValue() != null) {
                         //Phone is Already verified.
                         Log.d(TAG, "Already Verified");
@@ -162,13 +186,14 @@ public class FirebaseConn {
 
                         if (mVerificationInProgress) {
                             Log.d(TAG, "New Number");
+
                             startPhoneNumberVerification();
                         }
                     }
                 }
 
                 @Override
-                public void onCancelled(DatabaseError databaseError) {
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
                 }
             });
@@ -237,7 +262,7 @@ public class FirebaseConn {
             verifyPhoneNumberWithCode(mVerificationId, code);
         }
 
-        private void verifyPhoneNumberWithCode(String verificationId, String code) {
+        public void verifyPhoneNumberWithCode(String verificationId, String code) {
             PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationId, code);
             signInWithPhoneAuthCredential(credential);
         }
@@ -265,7 +290,7 @@ public class FirebaseConn {
                         FirebaseUser fireUser = task.getResult().getUser();
                         setFirebaseUser(fireUser);
                         setUserID(fireUser.getUid());
-                        details.savePhoneDetails(fullphoneNumber);
+                        details.savePhoneDetails(fullphoneNumber,fireUser.getUid());
                         eventBus.post(new UpdateUI(STATE_SIGNIN_SUCCESS, "Phone signInWithCredential:success"));
                         // [START_EXCLUDE]
                     } else {
@@ -275,6 +300,5 @@ public class FirebaseConn {
             });
         }
     }
-
 
 }
